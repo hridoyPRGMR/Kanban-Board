@@ -1,0 +1,11 @@
+KanbanBoard.Infrastructure/bin
+KanbanBoard.Infrastructure/obj
+KanbanBoard.API/bin
+KanbanBoard.API/obj
+KanbanBoard.Application/bin
+KanbanBoard.Application/obj
+KanbanBoard.Domain/bin
+KanbanBoard.Domain/obj
+KanbanBoard.Infrastructure/bin
+KanbanBoard.Infrastructure/obj
+.vscode
