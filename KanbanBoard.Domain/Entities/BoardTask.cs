@@ -2,7 +2,7 @@ using KanbanBoard.Domain.Common;
 
 namespace KanbanBoard.Domain.Entities
 {
-    public class Task : AuditableEntity
+    public class BoardTask : AuditableEntity
     {
         public string Title { get; private set; }
         public string Description { get; private set; }

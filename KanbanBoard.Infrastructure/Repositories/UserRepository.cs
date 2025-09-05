@@ -5,19 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KanbanBoard.Infrastructure.Repositories
 {
-    public class UserRepository(AppDbContext context) : IUserRepository
+    public class UserRepository: IUserRepository
     {
-        public async Task<User?> GetByIdAsync(Guid id) =>
-            await context.Users.FindAsync(id);
+        private readonly AppDbContext _context;
 
-        public async Task<IEnumerable<User>> GetAllAsync() =>
-            await context.Users.ToListAsync();
+        public UserRepository(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<User?> GetByIdAsync(Guid id) =>
+            await _context.Users.FindAsync(id);
 
         public async Task<User?> GetByEmailAsync(string email) =>
-            await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        public void Add(User entity) => context.Users.Add(entity);
+        public async Task<IEnumerable<User>> GetAllAsync() =>
+            await _context.Users.ToListAsync();
 
-        public void Remove(User entity) => context.Users.Remove(entity);
+        public async Task AddAsync(User user) =>
+            await _context.Users.AddAsync(user);
+
+        public void Remove(User user) =>
+            _context.Users.Remove(user);
     }
 }

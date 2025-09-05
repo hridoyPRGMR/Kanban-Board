@@ -1,10 +1,11 @@
 namespace KanbanBoard.Domain.IRepositories
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<TEntity> where TEntity : class
     {
-        Task<T?> GetByIdAsync(Guid id);
-        Task<IEnumerable<T>> GetAllAsync();
-        void Add(T entity);
-        void Remove(T entity);
+        Task<TEntity?> GetByIdAsync(Guid id);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<TEntity?> AddAsync(TEntity entity, bool autoSave = false);
+        Task<TEntity?> UpdateAsync(TEntity entity, bool autoSave = false);
+        Task RemoveAsync(TEntity entity, bool autoSave = false);
     }
 }

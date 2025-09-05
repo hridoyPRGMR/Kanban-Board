@@ -1,29 +1,40 @@
 using KanbanBoard.Infrastructure.DependencyInjections;
+using KanbanBoard.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddInfrastructure(builder.Configuration);
+// Add services to the container
+builder.Services.AddControllers(); // Required for API controllers
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddInfrastructure(builder.Configuration); // Your custom DI
+builder.Services.AddOpenApi(); // Optional if you need it
+builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
-app.UseSwagger();
 
-app.UseSwaggerUI(c =>
+// Apply pending migrations automatically (development convenience)
+using (var scope = app.Services.CreateScope())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-});
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
 }
 
-app.UseHttpsRedirection();
+// Enable Swagger in all environments (optional) or restrict to Development
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "KanbanBoard API V1");
+    c.RoutePrefix = string.Empty; // Makes Swagger UI available at root /
+});
 
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers(); // Map API controllers
+
+// Optional: keep your weatherforecast test endpoint
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -31,7 +42,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
