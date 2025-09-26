@@ -24,6 +24,13 @@ namespace KanbanBoard.API.Configuration
                           .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowCredentials();
                 });
+
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
             });
 
             return services;
