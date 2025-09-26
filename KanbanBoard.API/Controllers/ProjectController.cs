@@ -2,6 +2,7 @@ using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Application.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace KanbanBoard.API.Controllers
 {

@@ -3,8 +3,11 @@ using KanbanBoard.Application.DependencyInjection;
 using KanbanBoard.Infrastructure.DependencyInjections;
 using KanbanBoard.Infrastructure.Identity;
 using KanbanBoard.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +39,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
     
     // Seed roles
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     await SeedRolesAsync(roleManager);
 }
 
@@ -87,7 +90,7 @@ app.MapGet("/weatherforecast", () =>
 app.Run();
 
 // Seed roles method
-async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+async Task SeedRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
 {
     string[] roles = { "Admin", "User", "Manager" };
     
@@ -95,7 +98,7 @@ async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
     {
         if (!await roleManager.RoleExistsAsync(role))
         {
-            await roleManager.CreateAsync(new IdentityRole(role));
+            await roleManager.CreateAsync(new IdentityRole<Guid>(role));
         }
     }
 }

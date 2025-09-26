@@ -1,12 +1,14 @@
+using KanbanBoard.Domain.Common;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Infrastructure.Configurations;
 using KanbanBoard.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace KanbanBoard.Infrastructure.Persistence
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
     {
         public DbSet<Project> Projects { get; set; }
         public DbSet<Board> Boards { get; set; }
@@ -17,6 +19,11 @@ namespace KanbanBoard.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // Important for Identity
+
+            // Ignore abstract classes that shouldn't be mapped as entities
+            modelBuilder.Ignore<DomainEvent>();
+            modelBuilder.Ignore<BaseEntity>();
+            modelBuilder.Ignore<AuditableEntity>();
 
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
             modelBuilder.ApplyConfiguration(new BoardConfiguration());

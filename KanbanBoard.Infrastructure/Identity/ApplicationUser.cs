@@ -7,7 +7,7 @@ namespace KanbanBoard.Infrastructure.Identity
     /// Infrastructure wrapper for Domain User entity to work with ASP.NET Core Identity
     /// This keeps the Domain layer pure while allowing Infrastructure to handle Identity
     /// </summary>
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<Guid>
     {
         public string Name { get; set; } = string.Empty;
         
@@ -19,7 +19,7 @@ namespace KanbanBoard.Infrastructure.Identity
 
         public ApplicationUser(User domainUser)
         {
-            Id = domainUser.Id.ToString();
+            Id = domainUser.Id;
             Email = domainUser.Email;
             UserName = domainUser.UserName;
             Name = domainUser.Name;
