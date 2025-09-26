@@ -1,5 +1,6 @@
 using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Application.IServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KanbanBoard.API.Controllers
@@ -9,7 +10,7 @@ namespace KanbanBoard.API.Controllers
     public class ProjectController
     {
         public readonly IProjectService _projectService;
-        
+
         public ProjectController(IProjectService projectService)
         {
             _projectService = projectService;
@@ -19,8 +20,16 @@ namespace KanbanBoard.API.Controllers
         [HttpPost]
         public async Task<ProjectDto> CreateProjectAsync(CreateUpdateProjectDto input)
         {
+
             return await _projectService.CreateAsync(input);
         }
+
+        [HttpGet]
+        public async Task<List<ProjectDto>> GetProjectsAsync()
+        {
+            return (await _projectService.GetAllAsync()).ToList();
+        }
+
     }
-    
+
 }

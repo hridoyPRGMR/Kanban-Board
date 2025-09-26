@@ -5,6 +5,6 @@ namespace KanbanBoard.Application.IServices
         where TReturnDto : class
     {
         Task<TReturnDto?> GetByidAsync(Guid id);
-        Task<IEnumerable<TReturnDto>> GetAllAsync(TInputDto? input);
+        Task<IEnumerable<TReturnDto>> GetAllAsync();
     }
 }

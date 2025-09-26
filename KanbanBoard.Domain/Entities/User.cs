@@ -1,16 +1,13 @@
 using KanbanBoard.Domain.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace KanbanBoard.Domain.Entities
 {
-    public class User : AuditableEntity
+    public class User : IdentityUser
     {
-        public string Email { get; private set; }
-        public string PasswordHash { get; private set; }
-        public string UserName { get; private set; }
         public string Name { get; private set; }
-        public string PhoneNumber { get; private set; }
-
         public ICollection<Project> Projects { get; private set; } = [];
+        public ICollection<RefreshToken> RefreshTokens { get; private set; } = [];
 
         private User() { }
 

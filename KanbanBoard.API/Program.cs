@@ -1,17 +1,28 @@
+using KanbanBoard.API.Configuration;
+using KanbanBoard.Domain.Entities;
 using KanbanBoard.Infrastructure.DependencyInjections;
 using KanbanBoard.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddControllers(); // Required for API controllers
+// Configure services
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddIdentityConfiguration()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.AddRateLimitingConfiguration();
+builder.Services.AddSecurityHeaders();
+builder.Services.AddCorsConfiguration();
+
+// Add core services
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructure(builder.Configuration); // Your custom DI
-builder.Services.AddOpenApi(); // Optional if you need it
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
-
 
 var app = builder.Build();
 
@@ -20,28 +31,43 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+    
+    // Seed roles
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await SeedRolesAsync(roleManager);
 }
 
-// Enable Swagger in all environments (optional) or restrict to Development
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "KanbanBoard API V1");
-    c.RoutePrefix = string.Empty; // Makes Swagger UI available at root /
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "KanbanBoard API V1");
+        c.RoutePrefix = string.Empty;
+    });
+}
+
+// Apply security headers
+app.UseSecurityHeaders(app.Environment);
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+app.UseRateLimiter();
+
+app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
-app.MapControllers(); // Map API controllers
 
-// Optional: keep your weatherforecast test endpoint
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapControllers().RequireRateLimiting("GeneralPolicy");
 
+// Optional: keep your weatherforecast test endpoint (remove in production)
 app.MapGet("/weatherforecast", () =>
 {
+    var summaries = new[]
+    {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+    
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
@@ -52,9 +78,24 @@ app.MapGet("/weatherforecast", () =>
         .ToArray();
     return forecast;
 })
-.WithName("GetWeatherForecast");
+.WithName("GetWeatherForecast")
+.RequireRateLimiting("GeneralPolicy");
 
 app.Run();
+
+// Seed roles method
+async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+{
+    string[] roles = { "Admin", "User", "Manager" };
+    
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

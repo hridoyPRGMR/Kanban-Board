@@ -28,5 +28,9 @@ namespace KanbanBoard.Infrastructure.Repositories
 
         public void Remove(User user) =>
             _context.Users.Remove(user);
+
+        public Task<User?> GetByUsernameAsync(string username) =>
+            _context.Users.FirstOrDefaultAsync(u=> u.UserName == username);
+        
     }
 }

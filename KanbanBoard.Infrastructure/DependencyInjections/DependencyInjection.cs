@@ -16,13 +16,15 @@ namespace KanbanBoard.Infrastructure.DependencyInjections
     public static class DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
-        {
+        {   
             services.AddDbContext<AppDbContext>((provider,options) =>
             {
                 var interceptor = provider.GetRequiredService<AuditableEntitySaveChangesInterceptor>();
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
                     .AddInterceptors(interceptor);
             });
+
+            services.AddScoped<ITokenService, TokenService>();
 
             services.AddScoped<AuditableEntitySaveChangesInterceptor>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -31,10 +33,14 @@ namespace KanbanBoard.Infrastructure.DependencyInjections
             // services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             //Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProjectService, ProjectService>();
+
+            // Background services
+            services.AddHostedService<TokenCleanupService>();
 
             return services;
         }
