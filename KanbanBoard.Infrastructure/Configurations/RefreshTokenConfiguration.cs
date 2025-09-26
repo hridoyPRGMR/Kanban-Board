@@ -1,4 +1,5 @@
 using KanbanBoard.Domain.Entities;
+using KanbanBoard.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -38,8 +39,8 @@ namespace KanbanBoard.Infrastructure.Configurations
                 .IsRequired();
 
             // Relationships
-            builder.HasOne(rt => rt.User)
-                .WithMany(u => u.RefreshTokens)
+            builder.HasOne<ApplicationUser>()
+                .WithMany()
                 .HasForeignKey(rt => rt.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

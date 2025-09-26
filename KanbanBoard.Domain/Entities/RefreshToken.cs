@@ -4,20 +4,19 @@ namespace KanbanBoard.Domain.Entities
 {
     public class RefreshToken : BaseEntity
     {
-        public string Token { get; private set; }
+        public string Token { get; private set; } = string.Empty;
         public DateTime ExpiryDate { get; private set; }
         public bool IsRevoked { get; private set; }
         public string? RevokedReason { get; private set; }
         public DateTime? RevokedAt { get; private set; }
-        public string UserId { get; private set; }
-        public User User { get; private set; }
+        public Guid UserId { get; private set; }
         public string? ReplacedByToken { get; private set; }
-        public string ClientIpAddress { get; private set; }
-        public string UserAgent { get; private set; }
+        public string ClientIpAddress { get; private set; } = string.Empty;
+        public string UserAgent { get; private set; } = string.Empty;
 
         private RefreshToken() { }
 
-        public RefreshToken(string token, DateTime expiryDate, string userId, string clientIpAddress, string userAgent)
+        public RefreshToken(string token, DateTime expiryDate, Guid userId, string clientIpAddress, string userAgent)
         {
             Token = token;
             ExpiryDate = expiryDate;

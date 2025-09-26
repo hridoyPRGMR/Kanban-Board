@@ -1,6 +1,7 @@
 using KanbanBoard.API.Configuration;
-using KanbanBoard.Domain.Entities;
+using KanbanBoard.Application.DependencyInjection;
 using KanbanBoard.Infrastructure.DependencyInjections;
+using KanbanBoard.Infrastructure.Identity;
 using KanbanBoard.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,14 @@ builder.Services.AddRateLimitingConfiguration();
 builder.Services.AddSecurityHeaders();
 builder.Services.AddCorsConfiguration();
 
+// Add layer services
+builder.Services.AddApplication(builder.Configuration); // Application layer DI
+builder.Services.AddInfrastructure(builder.Configuration); // Infrastructure layer DI
+
 // Add core services
-builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

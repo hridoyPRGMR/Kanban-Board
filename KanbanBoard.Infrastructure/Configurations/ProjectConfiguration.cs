@@ -15,12 +15,20 @@ namespace KanbanBoard.Infrastructure.Configurations
                 .HasMaxLength(100);
 
             builder.Property(u => u.Description)
-                .IsRequired()
                 .HasMaxLength(500);
 
             builder.HasOne(u => u.Owner)
                 .WithMany(o => o.Projects)
-                .HasForeignKey(u => u.OwnerId);
+                .HasForeignKey(u => u.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(p => p.Boards)
+                .WithOne(b => b.Project)
+                .HasForeignKey(b => b.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ignore domain events for EF mapping
+            builder.Ignore(p => p.DomainEvents);
         }
     }
 }

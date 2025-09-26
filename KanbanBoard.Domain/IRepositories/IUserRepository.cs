@@ -9,6 +9,6 @@ namespace KanbanBoard.Domain.IRepositories
         Task<User?> GetByUsernameAsync(string username);
         Task<IEnumerable<User>> GetAllAsync();
         Task AddAsync(User user);
-        void Remove(User user);
+        Task RemoveAsync(User user);
     }
 }

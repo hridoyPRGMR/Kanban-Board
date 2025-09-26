@@ -5,9 +5,11 @@ namespace KanbanBoard.Application.Dtos.Projects
     public class CreateUpdateProjectDto
     {
         [Required(ErrorMessage = "Project name is required.")]
-        public string Name { get; set; }
+        [MaxLength(100, ErrorMessage = "Project name cannot be longer than 100 characters.")]
+        [MinLength(1, ErrorMessage = "Project name cannot be empty.")]
+        public string Name { get; set; } = string.Empty;
 
-        [StringLength(500,ErrorMessage = "Description must be less than or equal 500 character.")]
-        public string Description { get; set; }
+        [MaxLength(500, ErrorMessage = "Description cannot be longer than 500 characters.")]
+        public string? Description { get; set; }
     }
 }

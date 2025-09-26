@@ -16,18 +16,22 @@ namespace KanbanBoard.Infrastructure.Repositories
 
         public async Task<RefreshToken?> GetByTokenAsync(string token) =>
             await _context.RefreshTokens
-                .Include(rt => rt.User)
                 .FirstOrDefaultAsync(rt => rt.Token == token);
 
         public async Task<RefreshToken?> GetByIdAsync(Guid id) =>
             await _context.RefreshTokens
-                .Include(rt => rt.User)
                 .FirstOrDefaultAsync(rt => rt.Id == id);
 
-        public async Task<IEnumerable<RefreshToken>> GetActiveTokensByUserIdAsync(string userId) =>
-            await _context.RefreshTokens
-                .Where(rt => rt.UserId == userId && !rt.IsRevoked && rt.ExpiryDate > DateTime.UtcNow)
-                .ToListAsync();
+        public async Task<IEnumerable<RefreshToken>> GetActiveTokensByUserIdAsync(string userId)
+        {
+            if (Guid.TryParse(userId, out var guidUserId))
+            {
+                return await _context.RefreshTokens
+                    .Where(rt => rt.UserId == guidUserId && !rt.IsRevoked && rt.ExpiryDate > DateTime.UtcNow)
+                    .ToListAsync();
+            }
+            return new List<RefreshToken>();
+        }
 
         public async Task<IEnumerable<RefreshToken>> GetExpiredTokensAsync() =>
             await _context.RefreshTokens

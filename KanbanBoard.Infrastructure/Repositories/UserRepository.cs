@@ -1,36 +1,60 @@
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Domain.IRepositories;
+using KanbanBoard.Infrastructure.Identity;
 using KanbanBoard.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace KanbanBoard.Infrastructure.Repositories
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserRepository(AppDbContext context)
+        public UserRepository(AppDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        public async Task<User?> GetByIdAsync(Guid id) =>
-            await _context.Users.FindAsync(id);
+        public async Task<User?> GetByIdAsync(Guid id)
+        {
+            var appUser = await _userManager.FindByIdAsync(id.ToString());
+            return appUser?.ToDomainUser();
+        }
 
-        public async Task<User?> GetByEmailAsync(string email) =>
-            await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            var appUser = await _userManager.FindByEmailAsync(email);
+            return appUser?.ToDomainUser();
+        }
 
-        public async Task<IEnumerable<User>> GetAllAsync() =>
-            await _context.Users.ToListAsync();
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            var appUsers = await _userManager.Users.ToListAsync();
+            return appUsers.Select(u => u.ToDomainUser());
+        }
 
-        public async Task AddAsync(User user) =>
-            await _context.Users.AddAsync(user);
+        public async Task AddAsync(User user)
+        {
+            var appUser = new ApplicationUser(user);
+            await _userManager.CreateAsync(appUser);
+        }
 
-        public void Remove(User user) =>
-            _context.Users.Remove(user);
+        public async Task RemoveAsync(User user)
+        {
+            var appUser = await _userManager.FindByIdAsync(user.Id.ToString());
+            if (appUser != null)
+            {
+                await _userManager.DeleteAsync(appUser);
+            }
+        }
 
-        public Task<User?> GetByUsernameAsync(string username) =>
-            _context.Users.FirstOrDefaultAsync(u=> u.UserName == username);
-        
+        public async Task<User?> GetByUsernameAsync(string username)
+        {
+            var appUser = await _userManager.FindByNameAsync(username);
+            return appUser?.ToDomainUser();
+        }
     }
 }

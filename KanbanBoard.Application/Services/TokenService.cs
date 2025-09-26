@@ -2,42 +2,41 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using KanbanBoard.Application.Configuration;
 using KanbanBoard.Application.IServices;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Domain.IRepositories;
 using KanbanBoard.Domain.IPersistence;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace KanbanBoard.Infrastructure.Services
+namespace KanbanBoard.Application.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _config;
+        private readonly JwtOptions _jwtOptions;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly TokenValidationParameters _tokenValidationParameters;
 
         public TokenService(
-            IConfiguration config,
+            JwtOptions jwtOptions,
             IRefreshTokenRepository refreshTokenRepository,
             IUnitOfWork unitOfWork)
         {
-            _config = config;
+            _jwtOptions = jwtOptions;
             _refreshTokenRepository = refreshTokenRepository;
             _unitOfWork = unitOfWork;
             
             // Initialize token validation parameters
-            var jwtKey = _config["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is not configured");
-            var key = Encoding.UTF8.GetBytes(jwtKey);
+            var key = Encoding.UTF8.GetBytes(_jwtOptions.Key);
             _tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _config["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured"),
-                ValidAudience = _config["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured"),
+                ValidIssuer = _jwtOptions.Issuer,
+                ValidAudience = _jwtOptions.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ClockSkew = TimeSpan.Zero // Remove default 5 minute tolerance
             };
@@ -47,10 +46,10 @@ namespace KanbanBoard.Infrastructure.Services
         {
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.UserName ?? string.Empty),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
                 new("name", user.Name)
@@ -62,20 +61,14 @@ namespace KanbanBoard.Infrastructure.Services
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var jwtKey = _config["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is not configured");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expireMinutesString = _config["Jwt:ExpireMinutes"] ?? throw new InvalidOperationException("JWT ExpireMinutes is not configured");
-            var expireMinutes = double.Parse(expireMinutesString);
-
-            var jwtIssuer = _config["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured");
-            var jwtAudience = _config["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured");
 
             var token = new JwtSecurityToken(
-                issuer: jwtIssuer,
-                audience: jwtAudience,
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expireMinutes),
+                expires: DateTime.UtcNow.AddMinutes(_jwtOptions.ExpireMinutes),
                 signingCredentials: creds,
                 notBefore: DateTime.UtcNow // Token not valid before current time
             );
@@ -83,7 +76,7 @@ namespace KanbanBoard.Infrastructure.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public RefreshToken CreateRefreshToken(string userId, string clientIpAddress, string userAgent)
+        public RefreshToken CreateRefreshToken(Guid userId, string clientIpAddress, string userAgent)
         {
             var refreshTokenBytes = new byte[64];
             using var rng = RandomNumberGenerator.Create();
@@ -95,7 +88,7 @@ namespace KanbanBoard.Infrastructure.Services
             return new RefreshToken(refreshToken, expiryDate, userId, clientIpAddress, userAgent);
         }
 
-        public async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
+        public Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
         {
             try
             {
@@ -106,14 +99,14 @@ namespace KanbanBoard.Infrastructure.Services
                 if (validatedToken is not JwtSecurityToken jwtToken ||
                     !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return null;
+                    return Task.FromResult<ClaimsPrincipal?>(null);
                 }
 
-                return principal;
+                return Task.FromResult<ClaimsPrincipal?>(principal);
             }
             catch
             {
-                return null;
+                return Task.FromResult<ClaimsPrincipal?>(null);
             }
         }
 
