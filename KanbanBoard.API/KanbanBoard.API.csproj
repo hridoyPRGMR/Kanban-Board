@@ -14,8 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../KanbanBoard.Infrastructure/KanbanBoard.Infrastructure.csproj" />
     <ProjectReference Include="../KanbanBoard.Application/KanbanBoard.Application.csproj" />
+    <ProjectReference Include="../KanbanBoard.Infrastructure/KanbanBoard.Infrastructure.csproj"/>
+    <ProjectReference Include="../KanbanBoard.Shared/KanbanBoard.Shared.csproj"/>
   </ItemGroup>
 
 </Project>
