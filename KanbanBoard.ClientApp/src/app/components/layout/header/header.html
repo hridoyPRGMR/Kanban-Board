@@ -1,0 +1,35 @@
+<header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0 z-10">
+    <!-- Left: Title & Team Avatars -->
+    <div class="flex items-center">
+        <h1 class="text-xl font-bold text-gray-800 whitespace-nowrap">Product Launch 🚀</h1>
+        <div class="h-6 w-px bg-gray-300 mx-4 hidden md:block"></div>
+
+        <!-- Team Avatars -->
+        <div class="flex -space-x-2 overflow-hidden hidden sm:flex">
+            <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover"
+                src="https://ui-avatars.com/api/?name=Alex+K&background=0D8ABC&color=fff" alt="Alex K" />
+            <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover"
+                src="https://ui-avatars.com/api/?name=Sarah+M&background=random" alt="Sarah M" />
+            <button
+                class="h-8 w-8 rounded-full ring-2 ring-white bg-gray-100 flex items-center justify-center text-xs text-gray-500 font-medium hover:bg-gray-200 transition">
+                +3
+            </button>
+        </div>
+    </div>
+
+    <!-- Right: Search & Actions -->
+    <div class="flex items-center space-x-4">
+        <!-- Search Bar -->
+        <div class="relative hidden lg:block">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3" [innerHTML]="icons.search"></span>
+            <input type="text" placeholder="Search tasks..."
+                class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow">
+        </div>
+
+        <!-- New Issue Button -->
+        <button
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-md hover:shadow-lg">
+            <span class="mr-1.5" [innerHTML]="icons.plus"></span> New Issue
+        </button>
+    </div>
+</header>
