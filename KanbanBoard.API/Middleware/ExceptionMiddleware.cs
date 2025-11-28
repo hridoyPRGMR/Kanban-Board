@@ -17,28 +17,28 @@ namespace KanbanBoard.API.Middleware
             {
                 await _next(context);
             }
-            catch (ApplicationException ex)
+            catch (BaseException ex)
             {
                 _logger.LogError(ex, "Application error occurred");
-                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, ex.Message);
+                await HandleExceptionAsync(context, ex.StatusCode, ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Unhandled exception");
-                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, "An unexpected error occurred.");
+                await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, string message)
+        private static async Task HandleExceptionAsync(HttpContext context, int statusCode, string message)
         {
             var response = new ErrorResponse
             {
-                StatusCode = (int)statusCode,
+                StatusCode = statusCode,
                 Message = message,
                 Timestamp = DateTime.UtcNow
             };
 
-            context.Response.StatusCode = (int)statusCode;
+            context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(response);
         }

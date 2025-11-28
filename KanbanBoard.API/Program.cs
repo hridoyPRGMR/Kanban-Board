@@ -1,4 +1,5 @@
 using KanbanBoard.API.Configuration;
+using KanbanBoard.API.Middleware;
 using KanbanBoard.Application.DependencyInjection;
 using KanbanBoard.Infrastructure.DependencyInjections;
 using KanbanBoard.Infrastructure.Persistence;
@@ -52,6 +53,9 @@ if (app.Environment.IsDevelopment())
 
 // Apply security headers
 app.UseSecurityHeaders(app.Environment);
+
+//global exception handler
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");

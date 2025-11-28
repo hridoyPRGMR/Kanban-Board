@@ -50,7 +50,7 @@ namespace KanbanBoard.API.Configuration
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                         {
-                            context.Response.Headers.Add("Token-Expired", "true");
+                            context.Response.Headers["Token-Expired"] = " true";
                         }
                         return Task.CompletedTask;
                     }

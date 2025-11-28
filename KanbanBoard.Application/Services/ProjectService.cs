@@ -28,7 +28,6 @@ namespace KanbanBoard.Application.Services
         {
             try
             {
-                // For now, using a placeholder ownerId - this should come from the current user context
                 var ownerId = Guid.NewGuid(); // TODO: Get from authentication context
                 
                 var project = new Project(input.Name, input.Description, ownerId);

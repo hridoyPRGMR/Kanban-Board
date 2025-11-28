@@ -8,10 +8,12 @@ namespace KanbanBoard.Infrastructure.Services
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public IdentityService(UserManager<ApplicationUser> userManager)
+        public IdentityService  (UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<User?> FindByUsernameAsync(string username)
@@ -38,6 +40,12 @@ namespace KanbanBoard.Infrastructure.Services
             if (appUser == null) return false;
             
             return await _userManager.CheckPasswordAsync(appUser, password);
+        }
+
+        public async Task<(bool Succeeded, bool IsLockedOut)> PasswordSignInAsync(string username, string password, bool lockoutOnFailure)
+        {
+            var result = await _signInManager.PasswordSignInAsync(username, password, isPersistent: false, lockoutOnFailure: lockoutOnFailure);
+            return (result.Succeeded, result.IsLockedOut);
         }
 
         public async Task<bool> IsLockedOutAsync(User user)

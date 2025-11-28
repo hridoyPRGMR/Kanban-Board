@@ -44,26 +44,22 @@ namespace KanbanBoard.API.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                {
                     return BadRequest(ModelState);
-                }
-
+                
                 var clientIpAddress = GetClientIpAddress();
                 var userAgent = Request.Headers["User-Agent"].ToString();
-                
-                var loginResponse = await _authService.LoginAsync(model, clientIpAddress, userAgent);
-                
-                if (loginResponse == null)
-                {
-                    return Unauthorized(new { message = "Invalid credentials" });
-                }
 
+                var loginResponse = await _authService.LoginAsync(model, clientIpAddress, userAgent);
+
+                if (loginResponse == null)
+                    return Unauthorized(new { message = "Invalid credentials" });
+                
                 // Save refresh token to database
                 var refreshTokenEntity = _tokenService.CreateRefreshToken(
-                    Guid.Parse(loginResponse.User.Id), 
-                    clientIpAddress, 
+                    Guid.Parse(loginResponse.User.Id),
+                    clientIpAddress,
                     userAgent);
-                    
+
                 await _refreshTokenRepository.AddAsync(refreshTokenEntity);
                 await _unitOfWork.SaveChangesAsync();
 
@@ -72,7 +68,7 @@ namespace KanbanBoard.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during login for username: {Username}", model.Username);
-                return StatusCode(500, new { message = "An error occurred during login" });
+                throw;
             }
         }
 
@@ -80,33 +76,17 @@ namespace KanbanBoard.API.Controllers
         [EnableRateLimiting("RegisterPolicy")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto model)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var success = await _authService.RegisterAsync(model);
 
-                var success = await _authService.RegisterAsync(model);
-                
-                if (success)
-                {
-                    return Ok(new { message = "User registered successfully" });
-                }
-                
-                return BadRequest(new { message = "Registration failed" });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during registration for username: {Username}", model.UserName);
-                return StatusCode(500, new { message = "An error occurred during registration" });
-            }
+            if (success)
+                return Ok(new { message = "User registered successfully" });
+            
+            return BadRequest(new { message = "Registration failed" });
         }
-
+        
         [HttpPost("refresh")]
         [EnableRateLimiting("RefreshPolicy")]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto model)
@@ -147,17 +127,17 @@ namespace KanbanBoard.API.Controllers
 
                 // Create new access token
                 var newAccessToken = _tokenService.CreateAccessToken(user, roles);
-                
+
                 // Get client information
                 var clientIpAddress = GetClientIpAddress();
                 var userAgent = Request.Headers["User-Agent"].ToString();
-                
+
                 // Create new refresh token
                 var newRefreshToken = _tokenService.CreateRefreshToken(user.Id, clientIpAddress, userAgent);
-                
+
                 // Revoke old refresh token
                 refreshToken.Revoke("Replaced by new token", newRefreshToken.Token);
-                
+
                 // Save new refresh token
                 await _refreshTokenRepository.AddAsync(newRefreshToken);
                 await _unitOfWork.SaveChangesAsync();
@@ -176,7 +156,7 @@ namespace KanbanBoard.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during token refresh");
-                return StatusCode(500, new { message = "An error occurred during token refresh" });
+                throw;
             }
         }
 
@@ -193,14 +173,14 @@ namespace KanbanBoard.API.Controllers
                 }
 
                 await _tokenService.RevokeRefreshTokenAsync(model.RefreshToken, "Revoked by user");
-                
+
                 _logger.LogInformation("Refresh token revoked for user {UserId}", userId);
                 return Ok(new { message = "Token revoked successfully" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error revoking token");
-                return StatusCode(500, new { message = "An error occurred while revoking token" });
+                throw;
             }
         }
 
@@ -217,14 +197,14 @@ namespace KanbanBoard.API.Controllers
                 }
 
                 await _tokenService.RevokeAllUserTokensAsync(userId, "All tokens revoked by user");
-                
+
                 _logger.LogInformation("All refresh tokens revoked for user {UserId}", userId);
                 return Ok(new { message = "All tokens revoked successfully" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error revoking all tokens");
-                return StatusCode(500, new { message = "An error occurred while revoking tokens" });
+                throw;
             }
         }
 
@@ -244,14 +224,14 @@ namespace KanbanBoard.API.Controllers
                 {
                     await _tokenService.RevokeRefreshTokenAsync(model.RefreshToken, "User logout");
                 }
-                
+
                 _logger.LogInformation("User {UserId} logged out", userId);
                 return Ok(new { message = "Logged out successfully" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during logout");
-                return StatusCode(500, new { message = "An error occurred during logout" });
+                throw;
             }
         }
 
@@ -274,7 +254,7 @@ namespace KanbanBoard.API.Controllers
                 }
 
                 var roles = await _authService.GetUserRolesAsync(userId);
-                
+
                 var userInfo = new UserInfoDto
                 {
                     Id = user.Id.ToString(),
@@ -289,7 +269,7 @@ namespace KanbanBoard.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting current user");
-                return StatusCode(500, new { message = "An error occurred while getting user information" });
+                throw;
             }
         }
 

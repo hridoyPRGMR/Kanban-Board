@@ -1,9 +1,11 @@
+using System;
 using KanbanBoard.Application.Dtos.Auth;
 using KanbanBoard.Application.Dtos.Users;
 using KanbanBoard.Application.Dtos;
 using KanbanBoard.Application.IServices;
 using KanbanBoard.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using KanbanBoard.Application.Exceptions;
 
 namespace KanbanBoard.Application.Services
 {
@@ -31,38 +33,23 @@ namespace KanbanBoard.Application.Services
         {
             try
             {
-                // Find user
-                var user = await _identityService.FindByUsernameAsync(loginDto.Username);
-                if (user == null)
-                {
-                    _logger.LogWarning("Login attempt with invalid username: {Username}", loginDto.Username);
-                    return null;
-                }
+                var signInResult = await _identityService.PasswordSignInAsync(loginDto.Username, loginDto.Password, lockoutOnFailure: true);
 
-                // Check lockout
-                if (await _identityService.IsLockedOutAsync(user))
+                if (signInResult.IsLockedOut)
                 {
                     _logger.LogWarning("Login attempt for locked out user: {Username}", loginDto.Username);
-                    throw new InvalidOperationException("Account is locked. Please try again later.");
+                    throw new AccountLockedException();
                 }
 
-                // Validate password
-                var isValidPassword = await _identityService.CheckPasswordAsync(user, loginDto.Password);
-                if (!isValidPassword)
-                {
-                    await _identityService.AccessFailedAsync(user);
-                    _logger.LogWarning("Invalid password attempt for user: {Username}", loginDto.Username);
-                    return null;
-                }
+                if (!signInResult.Succeeded)
+                    throw new InvalidCredentialsException();
 
-                // Reset failed attempts
+                var user = await _identityService.FindByUsernameAsync(loginDto.Username)
+                    ?? throw new InvalidCredentialsException();
+                    
                 await _identityService.ResetAccessFailedCountAsync(user);
-                _logger.LogInformation("User {Username} logged in successfully", loginDto.Username);
 
-                // Get roles
                 var roles = await _identityService.GetRolesAsync(user);
-
-                // Create tokens
                 var accessToken = _tokenService.CreateAccessToken(user, roles);
                 var refreshToken = _tokenService.CreateRefreshToken(user.Id, clientIp, userAgent);
 
@@ -82,61 +69,44 @@ namespace KanbanBoard.Application.Services
                     }
                 };
             }
-            catch (InvalidOperationException)
+            catch (AuthenticationException)
             {
-                throw; // Re-throw known exceptions
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during login for username: {Username}", loginDto.Username);
-                throw new InvalidOperationException("An error occurred during login");
+                throw new AuthenticationException("An error occurred during login");
             }
         }
 
         public async Task<bool> RegisterAsync(RegisterUserDto registerDto)
         {
-            try
-            {
-                // Check if user exists
-                var existingUser = await _identityService.FindByEmailAsync(registerDto.Email);
-                if (existingUser != null)
-                {
-                    throw new InvalidOperationException("Email is already registered.");
-                }
+            if (await _identityService.FindByEmailAsync(registerDto.Email) is not null)
+                throw new UserAlreadyExistsException("Email is already registered.");
 
-                existingUser = await _identityService.FindByUsernameAsync(registerDto.UserName);
-                if (existingUser != null)
-                {
-                    throw new InvalidOperationException("Username is already taken.");
-                }
+            if (await _identityService.FindByUsernameAsync(registerDto.UserName) is not null)
+                throw new UserAlreadyExistsException("Username is already taken.");
 
-                // Create domain user
-                var user = new User(registerDto.Email, "", registerDto.UserName, registerDto.Name, registerDto.PhoneNumber);
-                
-                var result = await _identityService.CreateUserAsync(user, registerDto.PasswordHash);
-                
-                if (result)
-                {
-                    await _identityService.AddToRoleAsync(user, "User");
-                    _logger.LogInformation("User {Username} registered successfully", registerDto.UserName);
-                    return true;
-                }
-                else
-                {
-                    _logger.LogWarning("Failed to register user {Username}", registerDto.UserName);
-                    throw new InvalidOperationException("Registration failed");
-                }
-            }
-            catch (InvalidOperationException)
+            var user = new User(
+                registerDto.Email,
+                passwordHash: string.Empty,
+                userName: registerDto.UserName,
+                name: registerDto.Name,
+                phoneNumber: registerDto.PhoneNumber
+            );
+
+            var created = await _identityService.CreateUserAsync(user, registerDto.PasswordHash);
+            if (!created)
             {
-                throw; // Re-throw known exceptions
+                _logger.LogWarning("Failed to register user {Username}", registerDto.UserName);
+                throw new RegistrationFailedException("Registration failed");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error registering user {Username}", registerDto.UserName);
-                throw new InvalidOperationException("An error occurred during registration");
-            }
+
+            await _identityService.AddToRoleAsync(user, "User");
+            return true;
         }
+
 
         public async Task<User?> GetUserByIdAsync(string userId)
         {
@@ -147,7 +117,7 @@ namespace KanbanBoard.Application.Services
         {
             var user = await _identityService.FindByIdAsync(userId);
             if (user == null) return new List<string>();
-            
+
             return await _identityService.GetRolesAsync(user);
         }
     }

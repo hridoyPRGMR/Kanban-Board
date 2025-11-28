@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KanbanBoard.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+96183c7963f06d3dda88ec554d3c3624d7dd811b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35b90e89679a4fd26960341779bd2802f1fd1604")]
 [assembly: System.Reflection.AssemblyProductAttribute("KanbanBoard.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KanbanBoard.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
