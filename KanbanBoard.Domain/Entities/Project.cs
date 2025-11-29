@@ -9,8 +9,9 @@ namespace KanbanBoard.Domain.Entities
         public string? Description { get; private set; }
         public Guid OwnerId { get; private set; }
         public User Owner { get; private set; } = null!;
-        public IReadOnlyCollection<Board> Boards => _boards.AsReadOnly();
-        private readonly List<Board> _boards = new();
+        public ICollection<Board> Boards => _boards.AsReadOnly();
+        private readonly List<Board> _boards = [];
+        public ICollection<ProjectMember> Members {get; set;} = [];
 
         protected Project() { }
 

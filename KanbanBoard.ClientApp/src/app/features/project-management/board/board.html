@@ -1,0 +1,15 @@
+<div class="h-full p-6 inline-flex items-start space-x-6">
+  <!-- Columns Loop -->
+  <!-- Use @for for efficient iteration (Angular v17+) -->
+  @for (col of columns(); track col.id) {
+    <app-kanban-column [column]="col"></app-kanban-column>
+  }
+
+  <!-- Add Column Button -->
+  <button class="flex-shrink-0 w-80 h-full max-h-full flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-medium hover:border-indigo-500 hover:text-indigo-600 transition-colors">
+    + Add New Column
+  </button>
+  
+  <!-- Spacing shim for right edge -->
+  <div class="w-6 flex-shrink-0"></div>
+</div>

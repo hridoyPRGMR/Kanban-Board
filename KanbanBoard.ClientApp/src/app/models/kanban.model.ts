@@ -13,6 +13,14 @@ export interface Column {
   color: string; // Added color for visual identification
 }
 
+export interface TabItem {
+  label: string;
+  component?: any;      // If you want dynamic component loading
+  content?: string;     // For simple content
+  closable?: boolean;
+  data?: any;           // Optional metadata
+}
+
 export const INITIAL_COLUMNS: Column[] = [
   {
     id: '1', title: 'To Do', color: 'blue',

@@ -14,27 +14,20 @@
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto py-4">
         <ul class="space-y-1 px-3">
-            <!-- Item: Board -->
+            <!-- Dynamic Navigation Items -->
+            @for (item of navItems; track item.path) {
             <li>
-                <a href="#"
-                    class="flex items-center px-3 py-2.5 rounded-lg bg-indigo-50 text-indigo-700 group transition-colors">
-                    <div class="flex-shrink-0" [innerHTML]="icons.board"></div>
+                <a [routerLink]="item.path || '/'" 
+                   routerLinkActive="bg-indigo-50 text-indigo-700" 
+                   [routerLinkActiveOptions]="{ exact: item.isRoot }"
+                   class="flex items-center px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 group transition-colors">
+                    <div class="flex-shrink-0" [innerHTML]="getIcon(item.icon)"></div>
                     @if (expanded()) {
-                    <span class="ml-3 font-medium whitespace-nowrap">Board</span>
+                    <span class="ml-3 font-medium whitespace-nowrap">{{ item.title }}</span>
                     }
                 </a>
             </li>
-
-            <!-- Item: Settings -->
-            <li>
-                <a href="#"
-                    class="flex items-center px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-                    <div class="flex-shrink-0" [innerHTML]="icons.settings"></div>
-                    @if (expanded()) {
-                    <span class="ml-3 font-medium whitespace-nowrap">Settings</span>
-                    }
-                </a>
-            </li>
+            }
         </ul>
     </nav>
 

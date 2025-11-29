@@ -10,7 +10,7 @@ namespace KanbanBoard.Domain.Entities
         public Guid ProjectId { get; private set; }
         public Project Project { get; private set; } = null!;
         public IReadOnlyCollection<BoardTask> Tasks => _tasks.AsReadOnly();
-        private readonly List<BoardTask> _tasks = new();
+        private readonly List<BoardTask> _tasks = [];
 
         protected Board() { }
 

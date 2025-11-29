@@ -1,0 +1,17 @@
+<!-- tabs header -->
+<div class="flex gap-2 p-2 divide-x">
+    @for(pane of panes(); let i=$index; track i)
+    {
+        <div class="tab-item pr-2" [ngClass]="{ 'text-indigo-600': selectedIndex() === i }" (click)="select(i)">
+            {{ pane.label }}
+        </div>
+    }
+</div>
+
+<!-- tabs body -->
+<div class="">
+    @if (panes().length > 0) {
+    <ng-container [ngTemplateOutlet]="panes()[selectedIndex()].template">
+    </ng-container>
+    }
+</div>

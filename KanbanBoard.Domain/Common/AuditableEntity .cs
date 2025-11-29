@@ -8,6 +8,8 @@ namespace KanbanBoard.Domain.Common
         public DateTime? LastModifiedAt { get; private set; }
         public string? LastModifiedBy { get; private set; }
 
+        public bool IsArchived {get; set;}
+
         public void SetCreated(string userId)
         {
             CreatedAt = DateTime.UtcNow;
