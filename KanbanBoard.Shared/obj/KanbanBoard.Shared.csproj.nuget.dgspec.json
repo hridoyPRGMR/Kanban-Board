@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Shaon\\Desktop\\C#\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj": {}
+    "C:\\Users\\Shaon\\Desktop\\C Sharp\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Shaon\\Desktop\\C#\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj": {
+    "C:\\Users\\Shaon\\Desktop\\C Sharp\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Shaon\\Desktop\\C#\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj",
+        "projectUniqueName": "C:\\Users\\Shaon\\Desktop\\C Sharp\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj",
         "projectName": "KanbanBoard.Shared",
-        "projectPath": "C:\\Users\\Shaon\\Desktop\\C#\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj",
+        "projectPath": "C:\\Users\\Shaon\\Desktop\\C Sharp\\Kanban Board\\KanbanBoard.Shared\\KanbanBoard.Shared.csproj",
         "packagesPath": "C:\\Users\\Shaon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Shaon\\Desktop\\C#\\Kanban Board\\KanbanBoard.Shared\\obj\\",
+        "outputPath": "C:\\Users\\Shaon\\Desktop\\C Sharp\\Kanban Board\\KanbanBoard.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Shaon\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -29,12 +29,8 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Apply pending migrations automatically (development convenience)
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-    
     // Seed roles
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     await SeedRolesAsync(roleManager);

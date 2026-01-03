@@ -1,1 +1,15 @@
-<p>project works!</p>
+<p>project works!</p>toggleSlideOver
+<button
+    class="px-4 py-2 bg-blue-600 text-white rounded"
+    (click)="toggleSlideOver()"
+>
+    Create Project
+</button>
+
+<app-slide-over
+    [open]="isSlideOverOpen()"
+    (closed)="isSlideOverOpen.set(false)"
+    title="Create Project"
+>
+    <h3>Hello</h3>
+</app-slide-over>
