@@ -1,0 +1,50 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+  <form
+    [formGroup]="loginForm"
+    (ngSubmit)="onLogin()"
+    class="w-full max-w-sm space-y-4 rounded-xl bg-white p-6 shadow-md"
+  >
+    <!-- Username -->
+    <div>
+      <input
+        formControlName="username"
+        type="text"
+        placeholder="Username"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+               placeholder-gray-400"
+      />
+
+      @if (loginForm.get('username')?.touched && loginForm.get('username')?.invalid) {
+        <p class="mt-1 text-xs text-red-600">Username is required</p>
+      }
+    </div>
+
+    <!-- Password -->
+    <div>
+      <input
+        formControlName="password"
+        type="password"
+        placeholder="Password"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+               placeholder-gray-400"
+      />
+
+      @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+        <p class="mt-1 text-xs text-red-600">Password is required</p>
+      }
+    </div>
+
+    <!-- Submit -->
+    <button
+      type="submit"
+      [disabled]="loginForm.invalid"
+      class="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white
+             hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
+             disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Login
+    </button>
+  </form>
+</div>

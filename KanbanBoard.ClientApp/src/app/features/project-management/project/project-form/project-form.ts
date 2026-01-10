@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
-import { ProjectService } from '@core/api/api/project.service';
-import { CreateUpdateProjectDto } from '@core/api/model/project-management.dto';
+import { ProjectService } from '@core/api/project.service';
+import { CreateUpdateProjectDto } from '@core/model/project-management.dto';
 
 @Component({
   selector: 'app-project-form',

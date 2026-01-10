@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, output, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { routes } from '../../../app.routes';
+import { MainLayout } from '../main-layout/main-layout';
+import { NAV_ITEMS } from 'src/app/app-navigation';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,13 +19,7 @@ export class Sidebar {
   // Local state for sidebar visibility using Signals
   expanded = signal(true);
 
-  // Get routes that have data for navigation
-  navItems = routes.filter(route => route.data && (route.path !== undefined)).map(route => ({
-    path: route.path || '/',
-    title: route.data?.['title'],
-    icon: route.data?.['icon'],
-    isRoot: route.path === ''
-  }));
+  navItems = NAV_ITEMS;
 
   icons = {
     logo: `<svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg>`,
@@ -42,7 +38,7 @@ export class Sidebar {
     });
   }
 
-  getIcon(iconName: string) {
-    return this.icons[iconName as keyof typeof this.icons] || this.icons.board;
+  getIcon(iconName?: string) {
+    return this.icons[iconName as keyof typeof this.icons] ?? this.icons.board;
   }
 }
