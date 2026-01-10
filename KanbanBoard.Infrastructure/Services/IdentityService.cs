@@ -1,16 +1,15 @@
 using KanbanBoard.Application.IServices;
 using KanbanBoard.Domain.Entities;
-using KanbanBoard.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace KanbanBoard.Infrastructure.Services
 {
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public IdentityService  (UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public IdentityService  (UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -19,19 +18,19 @@ namespace KanbanBoard.Infrastructure.Services
         public async Task<User?> FindByUsernameAsync(string username)
         {
             var appUser = await _userManager.FindByNameAsync(username);
-            return appUser?.ToDomainUser();
+            return appUser;
         }
 
         public async Task<User?> FindByEmailAsync(string email)
         {
             var appUser = await _userManager.FindByEmailAsync(email);
-            return appUser?.ToDomainUser();
+            return appUser;
         }
 
         public async Task<User?> FindByIdAsync(string id)
         {
             var appUser = await _userManager.FindByIdAsync(id);
-            return appUser?.ToDomainUser();
+            return appUser;
         }
 
         public async Task<bool> CheckPasswordAsync(User user, string password)
@@ -76,8 +75,7 @@ namespace KanbanBoard.Infrastructure.Services
 
         public async Task<bool> CreateUserAsync(User user, string password)
         {
-            var appUser = new ApplicationUser(user);
-            var result = await _userManager.CreateAsync(appUser, password);
+            var result = await _userManager.CreateAsync(user, password);
             return result.Succeeded;
         }
 

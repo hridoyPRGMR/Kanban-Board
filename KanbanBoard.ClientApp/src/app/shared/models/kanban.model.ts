@@ -19,7 +19,7 @@ export interface TabItem {
   content?: string;     // For simple content
   closable?: boolean;
   data?: any;           // Optional metadata
-}
+} 
 
 export const INITIAL_COLUMNS: Column[] = [
   {

@@ -1,7 +1,6 @@
 using KanbanBoard.Application.IServices;
 using KanbanBoard.Domain.IPersistence;
 using KanbanBoard.Domain.IRepositories;
-using KanbanBoard.Infrastructure.Identity;
 using KanbanBoard.Infrastructure.Interceptors;
 using KanbanBoard.Infrastructure.Persistence;
 using KanbanBoard.Infrastructure.Repositories;

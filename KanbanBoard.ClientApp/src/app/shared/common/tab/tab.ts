@@ -1,6 +1,6 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, ContentChildren, Input, QueryList, signal } from '@angular/core';
-import { TabItem } from '../../../models/kanban.model';
+import { TabItem } from '../../models/kanban.model';
 import { TabPaneDirective } from './tab-pane.directive';
 
 @Component({

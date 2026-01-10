@@ -1,14 +1,13 @@
 using KanbanBoard.Domain.Common;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Infrastructure.Configurations;
-using KanbanBoard.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace KanbanBoard.Infrastructure.Persistence
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         public DbSet<Project> Projects { get; set; }
         public DbSet<Board> Boards { get; set; }

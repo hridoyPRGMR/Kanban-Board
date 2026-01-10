@@ -1,0 +1,78 @@
+<div class="">
+  <form
+    [formGroup]="projectForm"
+    (ngSubmit)="onSubmit()"
+    class="space-y-6"
+  >
+    <!-- Project Name -->
+    <div class="space-y-1">
+      <label
+        for="name"
+        class="block text-sm font-medium text-gray-700"
+      >
+        Project Name
+      </label>
+
+      <input
+        id="name"
+        formControlName="name"
+        type="text"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+               disabled:bg-gray-100"
+      />
+
+      @if (projectForm.get('name')?.touched && projectForm.get('name')?.invalid) {
+        <div class="text-sm text-red-600">
+          @if (projectForm.get('name')?.hasError('required')) {
+            <p>Name is required.</p>
+          }
+          @if (projectForm.get('name')?.hasError('minlength')) {
+            <p>Minimum 3 characters.</p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Description -->
+    <div class="space-y-1">
+      <label
+        for="description"
+        class="block text-sm font-medium text-gray-700"
+      >
+        Description
+      </label>
+
+      <textarea
+        id="description"
+        formControlName="description"
+        rows="3"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+               disabled:bg-gray-100"
+      ></textarea>
+
+      @if (projectForm.get('description')?.touched && projectForm.get('description')?.invalid) {
+        <div class="text-sm text-red-600">
+          @if (projectForm.get('description')?.hasError('maxlength')) {
+            <p>Maximum 1000 characters.</p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Submit -->
+    <div class="flex justify-end">
+      <button
+        type="submit"
+        [disabled]="projectForm.pending || projectForm.invalid"
+        class="inline-flex items-center justify-center rounded-lg bg-blue-600
+               px-5 py-2 text-sm font-medium text-white
+               hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
+               disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</div>

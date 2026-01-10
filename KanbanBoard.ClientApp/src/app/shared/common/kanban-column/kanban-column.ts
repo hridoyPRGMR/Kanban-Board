@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { Column } from '../../../models/kanban.model';
+import { Column } from '../../models/kanban.model';
 
 @Component({
   selector: 'app-kanban-column',

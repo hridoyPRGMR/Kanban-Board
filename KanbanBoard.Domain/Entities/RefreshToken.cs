@@ -10,11 +10,12 @@ namespace KanbanBoard.Domain.Entities
         public string? RevokedReason { get; private set; }
         public DateTime? RevokedAt { get; private set; }
         public Guid UserId { get; private set; }
+        public User User { get; private set; }
         public string? ReplacedByToken { get; private set; }
         public string ClientIpAddress { get; private set; } = string.Empty;
         public string UserAgent { get; private set; } = string.Empty;
 
-        private RefreshToken() { }
+        protected RefreshToken() { }
 
         public RefreshToken(string token, DateTime expiryDate, Guid userId, string clientIpAddress, string userAgent)
         {

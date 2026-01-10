@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { SlideOver } from '../../../shared/common/slide-over/slide-over';
+import { ProjectForm } from "./project-form/project-form";
 
 @Component({
   selector: 'app-project',
-  imports: [SlideOver],
+  imports: [SlideOver, ProjectForm],
   templateUrl: './project.html',
   styleUrl: './project.scss',
 })

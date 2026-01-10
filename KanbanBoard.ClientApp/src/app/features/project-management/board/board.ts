@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Column, INITIAL_COLUMNS } from '../../../models/kanban.model';
+import { Column, INITIAL_COLUMNS } from '../../../shared/models/kanban.model';
 import { KanabanColumn } from '../../../shared/common/kanban-column/kanban-column';
 
 @Component({

@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KanbanBoard.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250926074512_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260110120956_Intial")]
+    partial class Intial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -40,6 +40,9 @@ namespace KanbanBoard.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
@@ -84,6 +87,9 @@ namespace KanbanBoard.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
@@ -131,6 +137,9 @@ namespace KanbanBoard.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -155,9 +164,6 @@ namespace KanbanBoard.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ApplicationUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -167,6 +173,9 @@ namespace KanbanBoard.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
@@ -184,20 +193,55 @@ namespace KanbanBoard.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("KanbanBoard.Domain.Entities.ProjectMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProjectMember");
                 });
 
             modelBuilder.Entity("KanbanBoard.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ClientIpAddress")
@@ -235,12 +279,7 @@ namespace KanbanBoard.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ExpiryDate");
 
@@ -249,66 +288,10 @@ namespace KanbanBoard.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserId1");
-
                     b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("KanbanBoard.Domain.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("KanbanBoard.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -558,10 +541,6 @@ namespace KanbanBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("KanbanBoard.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany("Projects")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("KanbanBoard.Domain.Entities.User", "Owner")
                         .WithMany("Projects")
                         .HasForeignKey("OwnerId")
@@ -571,23 +550,34 @@ namespace KanbanBoard.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("KanbanBoard.Domain.Entities.RefreshToken", b =>
+            modelBuilder.Entity("KanbanBoard.Domain.Entities.ProjectMember", b =>
                 {
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("ApplicationUserId");
+                    b.HasOne("KanbanBoard.Domain.Entities.Project", "Project")
+                        .WithMany("Members")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("KanbanBoard.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KanbanBoard.Domain.Entities.User", null)
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("KanbanBoard.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("KanbanBoard.Domain.Entities.User", "User")
                         .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -601,7 +591,7 @@ namespace KanbanBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("KanbanBoard.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -610,7 +600,7 @@ namespace KanbanBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("KanbanBoard.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -625,7 +615,7 @@ namespace KanbanBoard.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("KanbanBoard.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -634,7 +624,7 @@ namespace KanbanBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("KanbanBoard.Infrastructure.Identity.ApplicationUser", null)
+                    b.HasOne("KanbanBoard.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -654,16 +644,11 @@ namespace KanbanBoard.Infrastructure.Migrations
             modelBuilder.Entity("KanbanBoard.Domain.Entities.Project", b =>
                 {
                     b.Navigation("Boards");
+
+                    b.Navigation("Members");
                 });
 
             modelBuilder.Entity("KanbanBoard.Domain.Entities.User", b =>
-                {
-                    b.Navigation("Projects");
-
-                    b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("KanbanBoard.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("Projects");
 

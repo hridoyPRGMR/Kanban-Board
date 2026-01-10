@@ -1,4 +1,4 @@
-using KanbanBoard.Infrastructure.Identity;
+using KanbanBoard.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +8,7 @@ namespace KanbanBoard.API.Configuration
     {
         public static IdentityBuilder AddIdentityConfiguration(this IServiceCollection services)
         {
-            return services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+            return services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 // Password settings
                 options.Password.RequireDigit = true;

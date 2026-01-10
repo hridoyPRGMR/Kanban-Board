@@ -62,10 +62,10 @@ namespace KanbanBoard.Application.Services
                     User = new UserInfoDto
                     {
                         Id = user.Id.ToString(),
-                        Username = user.UserName,
-                        Email = user.Email,
-                        Name = user.Name,
-                        Roles = roles
+                        Username = user.UserName ?? string.Empty,
+                        Email = user.Email ?? string.Empty,
+                        Name = user.Name ?? string.Empty,
+                        Roles = roles ?? Array.Empty<string>()
                     }
                 };
             }

@@ -5,6 +5,8 @@ using KanbanBoard.Infrastructure.DependencyInjections;
 using KanbanBoard.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using KanbanBoard.Application.IServices;
+using KanbanBoard.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+// Current user service (reads user id from the HttpContext claims)
+builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 
 var app = builder.Build();
 

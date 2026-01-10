@@ -13,24 +13,33 @@ namespace KanbanBoard.Application.Services
         private readonly IProjectRepository _projectRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
         public ProjectService(
             IProjectRepository projectRepository,
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            ICurrentUserService currentUserService)
         {
             _projectRepository = projectRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<ProjectDto> CreateAsync(CreateUpdateProjectDto input)
         {
             try
             {
-                var ownerId = Guid.NewGuid(); // TODO: Get from authentication context
-                
-                var project = new Project(input.Name, input.Description, ownerId);
+                // Get owner id from current authenticated user
+                var ownerId = _currentUserService?.UserId;
+                if (ownerId == null)
+                {
+                    // If your design allows anonymous project creation, adjust accordingly.
+                    throw new InvalidOperationException("Authenticated user required to create a project.");
+                }
+
+                var project = new Project(input.Name, input.Description, ownerId.Value);
                 var savedProject = await _projectRepository.AddAsync(project);
                 if (savedProject != null)
                 {

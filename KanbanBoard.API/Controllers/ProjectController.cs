@@ -31,7 +31,7 @@ namespace KanbanBoard.API.Controllers
                 }
 
                 var project = await _projectService.CreateAsync(input);
-                return CreatedAtAction(nameof(GetProject), new { id = "" }, project);
+                return StatusCode(200, new {message="Project created."});
             }
             catch (InvalidOperationException ex)
             {
