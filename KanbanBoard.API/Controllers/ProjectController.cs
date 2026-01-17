@@ -31,7 +31,13 @@ namespace KanbanBoard.API.Controllers
                 }
 
                 var project = await _projectService.CreateAsync(input);
-                return StatusCode(200, new {message="Project created."});
+                if (project == null)
+                {
+                    return StatusCode(500, new { message = "Failed to create project" });
+                }
+
+                // Return 201 Created with the created project DTO
+                return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             }
             catch (InvalidOperationException ex)
             {

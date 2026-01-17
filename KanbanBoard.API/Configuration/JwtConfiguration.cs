@@ -43,14 +43,42 @@ namespace KanbanBoard.API.Configuration
                 {
                     OnTokenValidated = context =>
                     {
-                        // Additional custom validation can be added here
+                        try
+                        {
+                            var loggerFactory = context.HttpContext.RequestServices.GetService(typeof(Microsoft.Extensions.Logging.ILoggerFactory)) as Microsoft.Extensions.Logging.ILoggerFactory;
+                            var logger = loggerFactory?.CreateLogger("JwtEvents");
+                            if (logger != null)
+                            {
+                                var sub = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "(no sub)";
+                                logger.LogInformation("JWT validated for subject {Sub}", sub);
+                                foreach (var c in context.Principal?.Claims ?? Array.Empty<System.Security.Claims.Claim>())
+                                {
+                                    logger.LogDebug("Claim {Type} = {Value}", c.Type, c.Value);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // swallow logging errors to avoid breaking auth flow
+                        }
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = context =>
                     {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        try
                         {
-                            context.Response.Headers["Token-Expired"] = " true";
+                            var loggerFactory = context.HttpContext.RequestServices.GetService(typeof(Microsoft.Extensions.Logging.ILoggerFactory)) as Microsoft.Extensions.Logging.ILoggerFactory;
+                            var logger = loggerFactory?.CreateLogger("JwtEvents");
+                            logger?.LogWarning(context.Exception, "JWT authentication failed");
+
+                            if (context.Exception is SecurityTokenExpiredException)
+                            {
+                                context.Response.Headers["Token-Expired"] = "true";
+                            }
+                        }
+                        catch
+                        {
+                            // ignore logging exceptions
                         }
                         return Task.CompletedTask;
                     }

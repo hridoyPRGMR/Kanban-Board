@@ -26,7 +26,7 @@ export class ProjectForm {
       return;
     }
 
-    const payload = this.projectForm.getRawValue as CreateUpdateProjectDto;
+  const payload = this.projectForm.getRawValue() as CreateUpdateProjectDto;
 
     this.projectService.create(payload).subscribe({
       next: (response)=>{

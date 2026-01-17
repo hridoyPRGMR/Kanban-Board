@@ -20,7 +20,7 @@ export class Register extends BaseForm {
     name:['',[Validators.required,Validators.minLength(3),Validators.maxLength(250)]],
     username:['',[Validators.required,Validators.minLength(3),Validators.maxLength(250)]],
     email:['',[Validators.required,Validators.email]],
-    phoneNumber:['',[Validators.required,Validators.maxLength(20),Validators.pattern("^((\\+88-?)|0)?[0-9]{11}$")]],
+    phoneNumber:['',[Validators.required,Validators.minLength(11),Validators.maxLength(20),Validators.pattern("/^(\+88|0)1[3-9]\d{8}$/")]],
     passwordHash:['',[Validators.required,Validators.minLength(6)]]
   });
 

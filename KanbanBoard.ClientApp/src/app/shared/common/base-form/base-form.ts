@@ -12,7 +12,6 @@ export abstract class BaseForm
 
         const errors = control.errors;
         
-        // Map internal error keys to user-friendly messages
         if (errors['required']) return 'This field is required.';
         if (errors['minlength']) return `Minimum ${errors['minlength'].requiredLength} characters required.`;
         if(errors['maxlength'])return `Maximum ${errors['maxLength']} characters allowed.`

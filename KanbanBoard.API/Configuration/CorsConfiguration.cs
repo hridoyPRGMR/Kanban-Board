@@ -12,7 +12,7 @@ namespace KanbanBoard.API.Configuration
                 {
                     policy.WithOrigins("http://localhost:3000", "https://localhost:3000") // Add HTTPS
                           .AllowAnyHeader()
-                          .AllowAnyMethod()
+                          .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowCredentials(); // Allow credentials for JWT
                 });
 

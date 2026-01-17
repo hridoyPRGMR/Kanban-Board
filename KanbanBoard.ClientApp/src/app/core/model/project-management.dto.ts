@@ -5,7 +5,8 @@ export interface CreateUpdateProjectDto
 }
 
 export interface ProjectDto{
-    name:string;
-    description?:string;
-    createdAt: Date
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: Date;
 }

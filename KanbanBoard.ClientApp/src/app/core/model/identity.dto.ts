@@ -28,11 +28,11 @@ export interface RegisterUserDto
 
 export interface LoginResponseDto
 {
-    accessToken:string;
-    refreshToke:string;
+    accessToken: string;
+    refreshToken: string;
     expiresAt: Date;
-    tokenType:string;
-    user:UserInfoDto;
+    tokenType: string;
+    user: UserInfoDto;
 }
 
 export interface UserInfoDto

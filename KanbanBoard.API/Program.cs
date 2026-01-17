@@ -11,10 +11,42 @@ using KanbanBoard.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure services
-builder.Services.AddJwtAuthentication(builder.Configuration);
+// Register Identity first so it doesn't replace the default authentication scheme
 builder.Services.AddIdentityConfiguration()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+// For API endpoints, prevent Identity's cookie authentication from redirecting to the
+// login page — return 401/403 instead. This avoids 302 responses to SPA/API calls when
+// authentication fails and lets the client handle the flow (e.g., refresh token or redirect).
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        }
+        else
+        {
+            context.Response.Redirect(context.RedirectUri);
+        }
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        }
+        else
+        {
+            context.Response.Redirect(context.RedirectUri);
+        }
+        return Task.CompletedTask;
+    };
+});
 builder.Services.AddRateLimitingConfiguration();
 builder.Services.AddSecurityHeaders();
 builder.Services.AddCorsConfiguration();

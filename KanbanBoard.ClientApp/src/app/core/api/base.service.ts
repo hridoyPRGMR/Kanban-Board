@@ -4,6 +4,7 @@ import { inject } from "@angular/core";
 import { Observable } from "rxjs";
 
 export abstract class BaseService<TResponse, TRequest> {
+  
   protected http = inject(HttpClient);
   protected abstract readonly endpoint: string;
 

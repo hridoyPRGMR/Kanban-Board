@@ -2,7 +2,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
-import { LoginDto, LoginResponseDto, RegisterUserDto } from '@core/model/identity.dto';
+import { LoginDto, LoginResponseDto, RegisterUserDto, RefreshTokenDto, TokenResponseDto } from '@core/model/identity.dto';
 import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
@@ -30,16 +30,42 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     this.currentUser.set(null);
 
     this.router.navigate(['/login']);
   }
 
+  /**
+   * Call the refresh endpoint to obtain a new access token (and optional new refresh token).
+   * This updates stored tokens via updateTokensFromRefresh.
+   */
+  refreshToken(payload: RefreshTokenDto) {
+    return this.http.post<TokenResponseDto>(`${this.API_URL}/refresh`, payload).pipe(
+      tap(res => this.updateTokensFromRefresh(res))
+    );
+  }
+
   private setSession(res: LoginResponseDto) {
     localStorage.setItem('accessToken', res.accessToken);
+    // Store refresh token as well so client can call refresh endpoint when needed.
+    // Note: storing refresh tokens in localStorage has XSS risks; consider HttpOnly cookie in production.
+    if (res.refreshToken) {
+      localStorage.setItem('refreshToken', res.refreshToken);
+    }
     localStorage.setItem('user', JSON.stringify(res.user));
     this.currentUser.set(res.user);
+  }
+
+  private updateTokensFromRefresh(res: TokenResponseDto) {
+    if (!res) return;
+    if (res.accessToken) {
+      localStorage.setItem('accessToken', res.accessToken);
+    }
+    if (res.refreshToken) {
+      localStorage.setItem('refreshToken', res.refreshToken);
+    }
   }
 
   private getInitialUser() {

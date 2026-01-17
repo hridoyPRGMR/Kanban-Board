@@ -44,7 +44,7 @@ namespace KanbanBoard.Application.Services
                 if (savedProject != null)
                 {
                     await _unitOfWork.SaveChangesAsync();
-                    return new ProjectDto(savedProject.Name, savedProject.Description, savedProject.CreatedAt);
+                    return new ProjectDto(savedProject.Id, savedProject.Name, savedProject.Description, savedProject.CreatedAt);
                 }
                 
                 throw new InvalidOperationException("Failed to create project");
@@ -68,13 +68,13 @@ namespace KanbanBoard.Application.Services
         public async Task<IEnumerable<ProjectDto>> GetAllAsync()
         {
             var projects = await _projectRepository.GetAllAsync();
-            return projects.Select(p => new ProjectDto(p.Name, p.Description, p.CreatedAt));
+            return projects.Select(p => new ProjectDto(p.Id, p.Name, p.Description, p.CreatedAt));
         }
 
         public async Task<ProjectDto?> GetByidAsync(Guid id)
         {
             var project = await _projectRepository.GetByIdAsync(id);
-            return project != null ? new ProjectDto(project.Name, project.Description, project.CreatedAt) : null;
+            return project != null ? new ProjectDto(project.Id, project.Name, project.Description, project.CreatedAt) : null;
         }
 
         public async Task UpdateAsync(Guid id, CreateUpdateProjectDto dto)
