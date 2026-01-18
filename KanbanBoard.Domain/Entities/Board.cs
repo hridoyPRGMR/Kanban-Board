@@ -1,5 +1,6 @@
 using KanbanBoard.Domain.Common;
 using KanbanBoard.Domain.Events;
+using KanbanBoard.Domain.Exception;
 
 namespace KanbanBoard.Domain.Entities
 {
@@ -14,20 +15,33 @@ namespace KanbanBoard.Domain.Entities
 
         protected Board() { }
 
-        public Board(string name, string? description, Guid projectId)
+        private Board(
+            string name, 
+            Guid projectId,
+            string? description 
+            ) : this()
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Board name cannot be empty", nameof(name));
+                throw new DomainValidationException("Board name cannot be empty");
             
             Name = name;
             Description = description;
             ProjectId = projectId;
         }
 
-        public void UpdateDetails(string name, string? description)
+        public static Board Create(
+            string name, 
+            Guid projectId,
+            string? description 
+        )
+        {
+            return new Board(name,projectId,description);
+        }
+
+        internal void UpdateDetails(string name, string? description)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Board name cannot be empty", nameof(name));
+                throw new DomainValidationException("Board name cannot be empty");
             
             Name = name;
             Description = description;

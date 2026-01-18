@@ -22,6 +22,7 @@ namespace KanbanBoard.Application.DependencyInjection
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IDomainValidationService, DomainValidationService>();
+            services.AddScoped<IBoardService,BoardService>();
 
             // AutoMapper
             services.AddAutoMapper(typeof(ApplicationDependencyInjection).Assembly);

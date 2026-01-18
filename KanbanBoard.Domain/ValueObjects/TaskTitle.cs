@@ -7,10 +7,10 @@ namespace KanbanBoard.Domain.ValueObjects
         public TaskTitle(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Task title cannot be empty", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Task title cannot be empty");
             
             if (value.Length > 200)
-                throw new ArgumentException("Task title cannot be longer than 200 characters", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Task title cannot be longer than 200 characters");
             
             Value = value.Trim();
         }

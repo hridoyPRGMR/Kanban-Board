@@ -4,8 +4,8 @@ namespace KanbanBoard.Domain.IRepositories
     {
         Task<TEntity?> GetByIdAsync(Guid id);
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<TEntity?> AddAsync(TEntity entity, bool autoSave = false);
-        Task<TEntity?> UpdateAsync(TEntity entity, bool autoSave = false);
-        Task RemoveAsync(TEntity entity, bool autoSave = false);
+        Task<TEntity?> AddAsync(TEntity entity);
+        Task<TEntity?> UpdateAsync(TEntity entity);
+        Task RemoveAsync(TEntity entity);
     }
 }

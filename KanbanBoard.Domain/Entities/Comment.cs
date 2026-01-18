@@ -15,7 +15,7 @@ namespace KanbanBoard.Domain.Entities
         public Comment(string content, Guid taskId, Guid authorId)
         {
             if (string.IsNullOrWhiteSpace(content))
-                throw new ArgumentException("Comment content cannot be empty", nameof(content));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Comment content cannot be empty");
             
             Content = content;
             TaskId = taskId;
@@ -25,7 +25,7 @@ namespace KanbanBoard.Domain.Entities
         public void UpdateContent(string content)
         {
             if (string.IsNullOrWhiteSpace(content))
-                throw new ArgumentException("Comment content cannot be empty", nameof(content));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Comment content cannot be empty");
             
             Content = content;
         }

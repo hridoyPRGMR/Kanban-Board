@@ -21,7 +21,7 @@ namespace KanbanBoard.Domain.Entities
         public BoardTask(string title, string description, Guid boardId, Guid assigneeId, long orderIndex)
         {
             if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Task title cannot be empty", nameof(title));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Task title cannot be empty");
             
             Title = title;
             Description = description ?? string.Empty;
@@ -34,7 +34,7 @@ namespace KanbanBoard.Domain.Entities
         public void UpdateDetails(string title, string description)
         {
             if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Task title cannot be empty", nameof(title));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Task title cannot be empty");
             
             Title = title;
             Description = description ?? string.Empty;

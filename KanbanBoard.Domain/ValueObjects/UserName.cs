@@ -7,16 +7,16 @@ namespace KanbanBoard.Domain.ValueObjects
         public UserName(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Username cannot be empty", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Username cannot be empty");
             
             if (value.Length < 3)
-                throw new ArgumentException("Username must be at least 3 characters long", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Username must be at least 3 characters long");
             
             if (value.Length > 50)
-                throw new ArgumentException("Username cannot be longer than 50 characters", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Username cannot be longer than 50 characters");
             
             if (!IsValidUserName(value))
-                throw new ArgumentException("Username can only contain letters, numbers, dots, hyphens, and underscores", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Username can only contain letters, numbers, dots, hyphens, and underscores");
             
             Value = value;
         }

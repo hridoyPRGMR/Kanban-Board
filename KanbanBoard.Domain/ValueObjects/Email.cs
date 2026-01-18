@@ -13,10 +13,10 @@ namespace KanbanBoard.Domain.ValueObjects
         public Email(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Email cannot be empty", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Email cannot be empty");
             
             if (!EmailRegex.IsMatch(value))
-                throw new ArgumentException("Invalid email format", nameof(value));
+                throw new KanbanBoard.Domain.Exception.DomainValidationException("Invalid email format");
             
             Value = value.ToLowerInvariant();
         }

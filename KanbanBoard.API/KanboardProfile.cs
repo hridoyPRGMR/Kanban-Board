@@ -1,6 +1,7 @@
 using AutoMapper;
 using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Domain.Entities;
+using KanbanBoard.Shared.Dtos;
 
 namespace KanbanBoard.API
 {
@@ -10,6 +11,8 @@ namespace KanbanBoard.API
         {
             CreateMap<CreateUpdateProjectDto, Project>();
             CreateMap<Project, ProjectDto>();
+
+            CreateMap<Board,BoardDto>();
         }
     }
 }

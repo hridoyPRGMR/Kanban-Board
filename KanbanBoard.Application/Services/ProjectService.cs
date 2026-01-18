@@ -2,6 +2,7 @@ using AutoMapper;
 using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Application.IServices;
 using KanbanBoard.Domain.Common;
+using KanbanBoard.Shared.Exceptions;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Domain.IPersistence;
 using KanbanBoard.Domain.IRepositories;
@@ -29,37 +30,33 @@ namespace KanbanBoard.Application.Services
 
         public async Task<ProjectDto> CreateAsync(CreateUpdateProjectDto input)
         {
-            try
+            // Get owner id from current authenticated user
+            var ownerId = _currentUserService?.UserId;
+            if (ownerId == null)
             {
-                // Get owner id from current authenticated user
-                var ownerId = _currentUserService?.UserId;
-                if (ownerId == null)
-                {
-                    // If your design allows anonymous project creation, adjust accordingly.
-                    throw new InvalidOperationException("Authenticated user required to create a project.");
-                }
+                // If your design allows anonymous project creation, adjust accordingly.
+                throw new UnauthorizedException("Authenticated user required to create a project.");
+            }
 
-                var project = new Project(input.Name, input.Description, ownerId.Value);
-                var savedProject = await _projectRepository.AddAsync(project);
-                if (savedProject != null)
-                {
-                    await _unitOfWork.SaveChangesAsync();
-                    return new ProjectDto(savedProject.Id, savedProject.Name, savedProject.Description, savedProject.CreatedAt);
-                }
-                
-                throw new InvalidOperationException("Failed to create project");
-            }
-            catch (ArgumentException ex)
+            var project = Project.Create(input.Name, input.Description, ownerId.Value);
+            var savedProject = await _projectRepository.AddAsync(project);
+            // Persist changes centrally via UnitOfWork so transaction boundaries and
+            // post-commit domain event dispatching (if implemented) work correctly.
+            await _unitOfWork.SaveChangesAsync();
+
+            if (savedProject != null)
             {
-                throw new InvalidOperationException($"Invalid project data: {ex.Message}", ex);
+                return _mapper.Map<ProjectDto>(savedProject);
             }
+
+            throw new ServerErrorException("Failed to create project");
         }
 
         public async Task DeleteAsync(Guid id)
         {
             var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
-                throw new InvalidOperationException("Project not found");
+                throw new NotFoundException("Project not found");
             
             await _projectRepository.RemoveAsync(project);
             await _unitOfWork.SaveChangesAsync();
@@ -81,18 +78,11 @@ namespace KanbanBoard.Application.Services
         {
             var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
-                throw new InvalidOperationException("Project not found");
+                throw new NotFoundException("Project not found");
             
-            try
-            {
-                project.UpdateDetails(dto.Name, dto.Description);
-                await _projectRepository.UpdateAsync(project);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch (ArgumentException ex)
-            {
-                throw new InvalidOperationException($"Invalid project data: {ex.Message}", ex);
-            }
+            project.UpdateDetails(dto.Name, dto.Description);
+            await _projectRepository.UpdateAsync(project);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }
