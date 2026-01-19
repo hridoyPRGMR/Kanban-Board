@@ -1,3 +1,4 @@
+using System;
 using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Application.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -49,14 +50,32 @@ namespace KanbanBoard.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProject(Guid id, [FromBody] CreateUpdateProjectDto input)
         {
-            await _projectService.UpdateAsync(id, input);
+            var result = await _projectService.UpdateAsync(id, input);
+            if (!result.IsSuccess)
+            {
+                var msg = result.ErrorMessage ?? string.Empty;
+                if (msg.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                    return NotFound(new { message = msg });
+
+                return BadRequest(new { message = msg });
+            }
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(Guid id)
         {
-            await _projectService.DeleteAsync(id);
+            var result = await _projectService.DeleteAsync(id);
+            if (!result.IsSuccess)
+            {
+                var msg = result.ErrorMessage ?? string.Empty;
+                if (msg.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                    return NotFound(new { message = msg });
+
+                return BadRequest(new { message = msg });
+            }
+
             return NoContent();
         }
     }

@@ -38,7 +38,7 @@ namespace KanbanBoard.Domain.Entities
             return new Board(name,projectId,description);
         }
 
-        internal void UpdateDetails(string name, string? description)
+        public void Update(string name, string? description)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainValidationException("Board name cannot be empty");

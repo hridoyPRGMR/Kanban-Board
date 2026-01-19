@@ -3,7 +3,7 @@ using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Shared.Dtos;
 
-namespace KanbanBoard.API
+namespace KanbanBoard.Application
 {
     public class ProjectProfile : Profile
     {

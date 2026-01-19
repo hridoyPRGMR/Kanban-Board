@@ -1,3 +1,5 @@
+using KanbanBoard.Shared.Dtos;
+
 namespace KanbanBoard.Application.IServices
 {
     public interface IWriteService<TInputDto,TReturnDto>
@@ -5,8 +7,8 @@ namespace KanbanBoard.Application.IServices
         where TReturnDto : class
     {
         Task<TReturnDto> CreateAsync(TInputDto input);
-        Task UpdateAsync(Guid id, TInputDto dto);
-        Task DeleteAsync(Guid id);
+        Task<Result> UpdateAsync(Guid id, TInputDto dto);
+        Task<Result> DeleteAsync(Guid id);
     }
     
 }

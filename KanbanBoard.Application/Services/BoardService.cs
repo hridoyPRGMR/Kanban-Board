@@ -42,9 +42,15 @@ namespace KanbanBoard.Application.Services
             return _mapper.Map<BoardDto>(savedBoard);
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task<Result> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var board = await _boardRepository.GetByIdAsync(id);
+            if (board is null)
+                return Result.Failure("Board not found");
+
+            await _boardRepository.RemoveAsync(board);
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
         }
 
         public Task<IEnumerable<BoardDto>> GetAllAsync()
@@ -52,14 +58,22 @@ namespace KanbanBoard.Application.Services
             throw new NotImplementedException();
         }
 
-        public Task<BoardDto?> GetByidAsync(Guid id)
+        public async Task<BoardDto?> GetByidAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var board = await _boardRepository.GetByIdAsync(id);
+            return _mapper.Map<BoardDto>(board);
         }
 
-        public Task UpdateAsync(Guid id, CreateUpdateBoardDto dto)
+        public async Task<Result> UpdateAsync(Guid id, CreateUpdateBoardDto dto)
         {
-            throw new NotImplementedException();
+            var board = await _boardRepository.GetByIdAsync(id);
+            if (board is null)
+                return Result.Failure("Board not found");
+
+            board.Update(dto.Name, dto.Description);
+            await _boardRepository.UpdateAsync(board);
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
         }
     }
 

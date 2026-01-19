@@ -6,6 +6,7 @@ using KanbanBoard.Shared.Exceptions;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Domain.IPersistence;
 using KanbanBoard.Domain.IRepositories;
+using KanbanBoard.Shared.Dtos;
 
 namespace KanbanBoard.Application.Services
 {
@@ -52,14 +53,15 @@ namespace KanbanBoard.Application.Services
             throw new ServerErrorException("Failed to create project");
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<Result> DeleteAsync(Guid id)
         {
             var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
-                throw new NotFoundException("Project not found");
-            
+                return Result.Failure("Project not found");
+
             await _projectRepository.RemoveAsync(project);
             await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
         }
 
         public async Task<IEnumerable<ProjectDto>> GetAllAsync()
@@ -74,15 +76,16 @@ namespace KanbanBoard.Application.Services
             return project != null ? new ProjectDto(project.Id, project.Name, project.Description, project.CreatedAt) : null;
         }
 
-        public async Task UpdateAsync(Guid id, CreateUpdateProjectDto dto)
+        public async Task<Result> UpdateAsync(Guid id, CreateUpdateProjectDto dto)
         {
             var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
-                throw new NotFoundException("Project not found");
-            
+                return Result.Failure("Project not found");
+
             project.UpdateDetails(dto.Name, dto.Description);
             await _projectRepository.UpdateAsync(project);
             await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
         }
     }
 }
