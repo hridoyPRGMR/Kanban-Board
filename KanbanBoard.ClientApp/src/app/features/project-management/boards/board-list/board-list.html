@@ -1,0 +1,17 @@
+@if(boardsResource.isLoading()){
+    <span class="spinner">Loading...</span>
+}
+@else if (boardsResource.error()) {
+    <div class="alert error">
+        Failed to load boards. <button (click)="boardsResource.reload()">Retry</button>
+    </div>
+}
+@else{
+    <app-data-table 
+        [data]="boardData()" 
+        [columns]="columns" 
+        (rowClick)="handleRowClick($event)"
+    >
+    </app-data-table>
+}
+

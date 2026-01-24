@@ -6,7 +6,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/core/api/base.service.ts", "src/app/core/api/auth.service.ts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

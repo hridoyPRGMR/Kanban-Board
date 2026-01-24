@@ -1,0 +1,23 @@
+<div class="overflow-x-auto rounded-lg hover:shadow-md transition my-2">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50 text-gray-700 text-left">
+            <tr>
+                @for (col of columns(); track col.key) {
+                    <th scope="col" class="px-4 py-2 text-sm font-medium uppercase">{{ col.header }}</th>
+                }
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @for (row of data(); track row) {
+                <tr (click) = "rowClick.emit(row)" class="hover:bg-gray-100 transition-colors duration-200">
+                    @for (col of columns(); track col.key){
+                        <td class="px-4 py-2 text-sm">{{$any(row)[col.key]}}</td>
+                    }
+                </tr>
+            }
+            @empty {
+                <tr><td [attr.colspan]="columns().length">No data found.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

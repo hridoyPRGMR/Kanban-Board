@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, output, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { routes } from '../../../app.routes';
@@ -8,7 +8,7 @@ import { NAV_ITEMS } from 'src/app/app-navigation';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })

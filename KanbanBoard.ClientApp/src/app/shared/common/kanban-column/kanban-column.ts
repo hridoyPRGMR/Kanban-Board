@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, input } from '@angular/core';
 import { Column } from '../../models/kanban.model';
 
 @Component({
   selector: 'app-kanban-column',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './kanban-column.html',
   styleUrl: './kanban-column.scss',
 })

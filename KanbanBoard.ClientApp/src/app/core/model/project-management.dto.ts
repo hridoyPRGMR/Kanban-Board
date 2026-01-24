@@ -10,3 +10,15 @@ export interface ProjectDto{
     description?: string;
     createdAt: Date;
 }
+
+
+export interface CreateUpdateBoardDto{
+    name:string;
+    description?:string;
+}
+
+export interface BoardDto{
+    id: string;
+    name:string;
+    description?:string;
+}

@@ -1,9 +1,15 @@
 <!-- tabs header -->
-<div class="flex gap-2 p-2 divide-x">
+<div class="flex gap-2 border-b border-gray-200">
     @for(pane of panes(); let i=$index; track i)
     {
-        <div class="tab-item pr-2" [ngClass]="{ 'text-indigo-600': selectedIndex() === i }" (click)="select(i)">
-            {{ pane.label }}
+        <div class="
+            font-medium tab-item text-gray-600 pr-2 pb-2 cursor-pointer
+            border-b-2 border-transparent
+            hover:border-gray-300
+            " 
+            [ngClass]="{ '
+                text-indigo-600 border-indigo-600 border-b-indigo-600 hover:border-b-indigo-600 hover:text-gray-600 ': selectedIndex() === i }" (click)="select(i)">
+            {{pane.label}}
         </div>
     }
 </div>

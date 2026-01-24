@@ -1,1 +1,22 @@
-<app-project-card></app-project-card>
+<div>
+    <div>
+        <h1 class="heading-h1">Recent Projects</h1>
+    </div>
+
+    <div class="w-full h-px border-b border-gray-200 my-2"></div>
+
+    <div>
+        <app-project-card></app-project-card>
+    </div>
+    
+    <div class="my-4">
+        <app-tab>
+            <div *tabPane="'Worked On'"></div>
+            <div *tabPane="'Assigned To Me'"></div>
+            <div *tabPane="'Boards'">
+                <app-board-list/>
+            </div>
+        </app-tab>
+    </div>
+
+</div>
