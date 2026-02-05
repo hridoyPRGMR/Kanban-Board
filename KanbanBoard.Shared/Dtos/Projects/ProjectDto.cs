@@ -1,4 +1,4 @@
-namespace KanbanBoard.Application.Dtos.Projects
+namespace KanbanBoard.Application.Dtos
 {
     public record ProjectDto(
         Guid Id,

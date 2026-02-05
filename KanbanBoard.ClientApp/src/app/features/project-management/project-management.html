@@ -1,22 +1,94 @@
-<div>
-    <div>
-        <h1 class="heading-h1">Recent Projects</h1>
-    </div>
+<div class="max-w-[1400px] mx-auto p-4 bg-white rounded-xl shadow-sm border border-gray-200 my-4">
+    <div class="flex items-center justify-between mb-6 px-1">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+            <h1 class="text-lg font-bold text-gray-900 tracking-tight whitespace-nowrap">Recent Projects</h1>
+            
+            <div class="flex items-center gap-2 border-l border-gray-200 pl-4 flex-1 max-w-md">
+                <div class="relative flex-1 group">
+                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                        <svg class="w-3.5 h-3.5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input 
+                        type="text" 
+                        [value]="projectSearchTerm()"
+                        (input)="projectSearchTerm.set($any($event.target).value)"
+                        placeholder="Search projects..." 
+                        class="block w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-100 text-[12px] placeholder:text-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium"
+                    >
+                </div>
 
-    <div class="w-full h-px border-b border-gray-200 my-2"></div>
-
-    <div>
-        <app-project-card></app-project-card>
-    </div>
-    
-    <div class="my-4">
-        <app-tab>
-            <div *tabPane="'Worked On'"></div>
-            <div *tabPane="'Assigned To Me'"></div>
-            <div *tabPane="'Boards'">
-                <app-board-list/>
+                <button (click)="isDescending.set(!isDescending())"
+                    class="flex items-center gap-1.5 px-2 py-1.5 text-[10px] font-bold text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded border border-transparent hover:border-indigo-100 transition-all uppercase tracking-wider whitespace-nowrap">
+                    <span>Sort</span>
+                    <svg class="w-3 h-3 transition-transform duration-300" [class.rotate-180]="isDescending()"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                    </svg>
+                </button>
+                
+                <span class="hidden md:inline-flex px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase tracking-tight whitespace-nowrap">
+                    {{ projectsResponse().totalCount }} Total
+                </span>
             </div>
-        </app-tab>
+        </div>
+
+        <button (click)="toggleSlideOver()"
+            class="text-[11px] uppercase tracking-widest font-bold px-4 py-2 bg-indigo-600 text-white rounded shadow-sm hover:bg-indigo-700 hover:shadow-indigo-200 transition-all">
+            + New Project
+        </button>
     </div>
 
+    <div class="flex flex-col lg:flex-row items-center gap-2">
+        <div class="flex-1 w-full bg-white rounded-lg divide-y divide-gray-50 overflow-hidden border-1 border-gray-300 border-dashed inset-shadow-sm">
+            @for(project of projectsResponse().items; track project.id){
+                <app-project-card [name]="project.name" [createdAt]="project.createdAt" />
+            } @empty {
+                <div class="p-12 text-center">
+                    <div class="text-gray-300 mb-2 font-mono text-xl">0_0</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest font-medium">No active projects found</div>
+                </div>
+            }
+        </div>
+
+        <aside class="lg:w-12 w-full flex lg:flex-col items-center justify-start gap-4 py-2 lg:mt-2">
+            <button (click)="goToPage(currentPage() - 1)" [disabled]="!projectsResponse().hasPreviousPage"
+                class="p-1.5 rounded-md hover:bg-indigo-50 hover:text-indigo-600 text-gray-400 disabled:opacity-20 transition-all">
+                <svg class="w-5 h-5 lg:rotate-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M5 15l7-7 7 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <div class="flex flex-col items-center group">
+                <input type="number" [value]="currentPage()" (change)="onPageInputChange($event)"
+                    class="w-8 text-center text-sm font-black text-indigo-600 bg-transparent border-none outline-none ring-0 focus:ring-0 p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    min="1" [max]="projectsResponse().totalPages">
+                <div class="w-4 h-[2px] bg-indigo-100 group-hover:w-6 group-hover:bg-indigo-400 transition-all rounded-full my-0.5"></div>
+                <span class="text-[9px] text-gray-300 font-bold uppercase">{{ projectsResponse().totalPages }}</span>
+            </div>
+
+            <button (click)="goToPage(currentPage() + 1)" [disabled]="!projectsResponse().hasNextPage"
+                class="p-1.5 rounded-md hover:bg-indigo-50 hover:text-indigo-600 text-gray-400 disabled:opacity-20 transition-all">
+                <svg class="w-5 h-5 lg:rotate-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </aside>
+    </div>
 </div>
+
+<div class="my-4">
+    <app-tab>
+        <div *tabPane="'Worked On'"></div>
+        <div *tabPane="'Assigned To Me'"></div>
+        <div *tabPane="'Boards'">
+            <app-board-list />
+        </div>
+    </app-tab>
+</div>
+
+
+<app-slide-over [open]="isSlideOverOpen()" (closed)="isSlideOverOpen.set(false)" title="Create Project">
+    <app-project-form></app-project-form>
+</app-slide-over>

@@ -34,5 +34,9 @@ namespace KanbanBoard.API.Services
         }
 
         public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+        public Guid GetRequiredUserId() => UserId ?? throw new InvalidOperationException("User must be authenticated");
+
     }
+    
 }

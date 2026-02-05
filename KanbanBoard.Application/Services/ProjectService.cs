@@ -1,5 +1,4 @@
 using AutoMapper;
-using KanbanBoard.Application.Dtos.Projects;
 using KanbanBoard.Application.IServices;
 using KanbanBoard.Domain.Common;
 using KanbanBoard.Shared.Exceptions;
@@ -7,6 +6,7 @@ using KanbanBoard.Domain.Entities;
 using KanbanBoard.Domain.IPersistence;
 using KanbanBoard.Domain.IRepositories;
 using KanbanBoard.Shared.Dtos;
+using KanbanBoard.Application.Dtos;
 
 namespace KanbanBoard.Application.Services
 {
@@ -86,6 +86,13 @@ namespace KanbanBoard.Application.Services
             await _projectRepository.UpdateAsync(project);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success();
+        }
+
+        public async Task<PagedResponseDto<ProjectDto>> GetPaginatedProjects(ProjectFilterRequestDto input)
+        {
+            var projects = await _projectRepository.GetPagedAsync(_currentUserService.GetRequiredUserId(),input);
+            
+            return projects;
         }
     }
 }

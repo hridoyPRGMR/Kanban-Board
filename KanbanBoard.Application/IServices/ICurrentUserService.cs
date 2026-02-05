@@ -17,5 +17,6 @@ namespace KanbanBoard.Application.IServices
         /// Whether a user is authenticated.
         /// </summary>
         bool IsAuthenticated { get; }
+        Guid GetRequiredUserId();
     }
 }

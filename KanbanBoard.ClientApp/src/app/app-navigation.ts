@@ -3,6 +3,7 @@ export interface NavItem {
   title: string;
   icon?: string;
   exact?: boolean;
+  children?: NavItem[];
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -13,8 +14,8 @@ export const NAV_ITEMS: NavItem[] = [
     exact: true,
   },
   {
-    path: '/project',
-    title: 'Project Management',
+    path: '/projects',
+    title: 'Projects',
     icon: 'project',
   },
   {

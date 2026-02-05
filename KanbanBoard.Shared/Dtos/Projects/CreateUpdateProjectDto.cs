@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace KanbanBoard.Application.Dtos.Projects
+namespace KanbanBoard.Application.Dtos
 {
     public class CreateUpdateProjectDto
     {

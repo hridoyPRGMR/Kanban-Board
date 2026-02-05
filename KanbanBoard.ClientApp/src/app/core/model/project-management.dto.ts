@@ -1,3 +1,5 @@
+import { PagedAndSortedResultRequestDto } from "./common.dto";
+
 export interface CreateUpdateProjectDto
 {
     name:string;
@@ -8,7 +10,7 @@ export interface ProjectDto{
     id: string;
     name: string;
     description?: string;
-    createdAt: Date;
+    createdAt: string;
 }
 
 
@@ -22,3 +24,5 @@ export interface BoardDto{
     name:string;
     description?:string;
 }
+
+export interface ProjectFilterRequestDto extends PagedAndSortedResultRequestDto{}

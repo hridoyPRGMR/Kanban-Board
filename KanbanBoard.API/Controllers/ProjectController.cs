@@ -1,6 +1,7 @@
 using System;
-using KanbanBoard.Application.Dtos.Projects;
+using KanbanBoard.Application.Dtos;
 using KanbanBoard.Application.IServices;
+using KanbanBoard.Shared.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,15 +26,7 @@ namespace KanbanBoard.API.Controllers
         public async Task<IActionResult> CreateProject([FromBody] CreateUpdateProjectDto input)
         {
             var project = await _projectService.CreateAsync(input);
-            // Return 201 Created with the created project DTO
             return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetProjects()
-        {
-            var projects = await _projectService.GetAllAsync();
-            return Ok(projects);
         }
 
         [HttpGet("{id}")]
@@ -41,10 +34,16 @@ namespace KanbanBoard.API.Controllers
         {
             var project = await _projectService.GetByidAsync(id);
             if (project == null)
-            {
                 return NotFound(new { message = "Project not found" });
-            }
+
             return Ok(project);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProjects([FromQuery] ProjectFilterRequestDto input)
+        {
+            var projects = await _projectService.GetPaginatedProjects(input);
+            return Ok(projects);
         }
 
         [HttpPut("{id}")]
@@ -59,7 +58,6 @@ namespace KanbanBoard.API.Controllers
 
                 return BadRequest(new { message = msg });
             }
-
             return NoContent();
         }
 
@@ -75,8 +73,8 @@ namespace KanbanBoard.API.Controllers
 
                 return BadRequest(new { message = msg });
             }
-
             return NoContent();
         }
     }
+
 }

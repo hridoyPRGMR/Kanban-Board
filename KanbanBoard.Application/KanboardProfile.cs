@@ -1,5 +1,5 @@
 using AutoMapper;
-using KanbanBoard.Application.Dtos.Projects;
+using KanbanBoard.Application.Dtos;
 using KanbanBoard.Domain.Entities;
 using KanbanBoard.Shared.Dtos;
 

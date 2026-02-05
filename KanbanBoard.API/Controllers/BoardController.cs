@@ -51,5 +51,11 @@ namespace KanbanBoard.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            return NoContent();
+        }
     }
 }

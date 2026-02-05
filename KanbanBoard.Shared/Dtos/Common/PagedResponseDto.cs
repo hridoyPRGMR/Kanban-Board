@@ -1,6 +1,6 @@
 namespace KanbanBoard.Shared.Dtos
 {
-    public record PagedResponseDto<T>(
+    public sealed record PagedResponseDto<T>(
         IEnumerable<T> Items,
         int TotalCount,
         int PageNumber,
